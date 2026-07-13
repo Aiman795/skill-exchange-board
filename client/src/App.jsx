@@ -5,6 +5,7 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import Signup from "./pages/Signup"
 import Login from "./pages/Login"
+import Profile from "./pages/Profile";
 
 import './App.css'
 
@@ -15,6 +16,7 @@ function App() {
     <Routes>
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/profile" element={<Profile />} />
       <Route
         path="/"
         element={
