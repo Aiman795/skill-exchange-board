@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import ProfileForm from "../components/ProfileForm";
-import { getProfile, updateProfile } from "../lib/api.mock";
+import { getProfile, updateProfile } from "../lib/api";
 import "./auth.css";
 
 export default function Profile() {

@@ -21,7 +21,19 @@ export default function Navbar() {
 
   return (
     <nav className="border-b" style={{ borderColor: "var(--color-border)" }}>
-      <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div
+        className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "3rem",
+          flexWrap: "wrap",
+          maxWidth: "64rem",
+          margin: "0 auto",
+          padding: "1rem 1.5rem",
+        }}
+      >
         <Link to="/" className="flex items-center gap-2">
           <ExchangeMark />
           <span className="font-display text-lg font-semibold" style={{ color: "var(--color-primary)" }}>
@@ -29,9 +41,18 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-6 text-sm font-medium">
+        <div
+          className="flex items-center gap-6 text-sm font-medium"
+          style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}
+        >
           {isLoggedIn ? (
             <>
+              <Link to="/create-listing" className="hover:opacity-70" style={{ color: "var(--color-text)" }}>
+                Create Listing
+              </Link>
+              <Link to="/my-listings" className="hover:opacity-70" style={{ color: "var(--color-text)" }}>
+                My Listings
+              </Link>
               <Link to="/profile" className="hover:opacity-70" style={{ color: "var(--color-text)" }}>
                 Profile
               </Link>

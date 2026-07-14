@@ -31,7 +31,7 @@ export default function Login() {
       }
 
       localStorage.setItem("token", data.token);
-      navigate("/dashboard");
+      navigate("/"); // No /dashboard page exists yet, go home instead
     } catch (err) {
       setError(err.message);
     } finally {

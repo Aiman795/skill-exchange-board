@@ -28,12 +28,17 @@
   font-weight: 600;
 }
 
-.auth-form input {
+.auth-form input,
+.auth-form select,
+.auth-form textarea {
   padding: 0.6rem;
   margin-top: 0.25rem;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .auth-form button {

@@ -11,7 +11,7 @@ const listingSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["offer", "request"],
+      enum: ["offer", "request"], // Frontend se value lowercase ("offer"/"request") bhejiye ga
       required: [true, "Type is required (offer or request)"],
     },
     title: {
@@ -29,6 +29,13 @@ const listingSchema = new Schema(
       required: [true, "Description is required"],
       trim: true,
     },
+    // 1. Availability field jo Aiman ke issue mein demanded hai
+    availability: {
+      type: String,
+      required: [true, "Availability is required"],
+      trim: true, // e.g., "Online", "In-Person", "Weekends"
+    },
+    // 2. RadiusKm pehle se maujood hai, standard default value 5 ke sath
     radiusKm: {
       type: Number,
       default: 5,

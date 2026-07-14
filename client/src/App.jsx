@@ -6,6 +6,9 @@ import heroImg from './assets/hero.png'
 import Signup from "./pages/Signup"
 import Login from "./pages/Login"
 import Profile from "./pages/Profile";
+import CreateListing from "./pages/CreateListing";
+import MyListings from "./pages/MyListings";
+import Navbar from "./components/Navbar";
 
 import './App.css'
 
@@ -13,10 +16,14 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <Routes>
+    <>
+      <Navbar />
+      <Routes>
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/create-listing" element={<CreateListing />} />
+      <Route path="/my-listings" element={<MyListings />} />
       <Route
         path="/"
         element={
@@ -40,15 +47,28 @@ function App() {
               >
                 Count is {count}
               </button>
-              <p>
-                <Link to="/signup">Sign Up</Link> | <Link to="/login">Login</Link>
+              <p
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "1rem",
+                  marginTop: "1rem",
+                }}
+              >
+                <Link to="/signup">Sign Up</Link>
+                <span>|</span>
+                <Link to="/login">Login</Link>
+                <span>|</span>
+                <Link to="/create-listing">Create Listing</Link>
               </p>
             </section>
             {/* rest of your existing docs/social sections stay here as-is */}
           </>
         }
       />
-    </Routes>
+      </Routes>
+    </>
   )
 }
 
