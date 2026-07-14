@@ -1,35 +1,116 @@
 import User from "../models/User.js";
 
+// ============================================
+// GET OWN PROFILE (Protected)
+// ============================================
+
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select("-passwordHash");
-    res.status(200).json({ user });
+    console.log("📡 Getting profile for user:", req.userId);
+
+    const user = await User.findById(req.userId).select("-passwordHash -__v");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    console.log("✅ Profile found:", user.name);
+
+    // 👇 Return in the format frontend expects
+    res.json({
+      success: true,
+      user: user.toObject(),
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("❌ Error fetching profile:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
+// ============================================
+// UPDATE OWN PROFILE (Protected)
+// ============================================
+
 export const updateProfile = async (req, res) => {
   try {
-    const { name, bio, location } = req.body;
+    console.log("📡 Updating profile for user:", req.userId);
+    console.log("📡 Update data:", req.body);
 
-    const updateData = {
-      ...(name && { name }),
-      ...(bio !== undefined && { bio }),
-      ...(location !== undefined && { location }),
-    };
+    const { name, city, bio } = req.body;
+    const user = await User.findById(req.userId);
 
-    if (req.file) {
-      updateData.photoUrl = `/uploads/profile-photos/${req.file.filename}`;
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    const updatedUser = await User.findByIdAndUpdate(req.userId, updateData, {
-      new: true,
-      runValidators: true,
-    }).select("-passwordHash");
+    if (name) user.name = name;
+    if (city) user.city = city;
+    if (bio) user.bio = bio;
 
-    res.status(200).json({ message: "Profile updated", user: updatedUser });
+    await user.save();
+
+    console.log("✅ Profile updated successfully");
+
+    // 👇 Return updated user in the same format
+    res.json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        city: user.city,
+        bio: user.bio,
+        photoUrl: user.photoUrl,
+        createdAt: user.createdAt,
+      },
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("❌ Error updating profile:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ============================================
+// GET ANY USER PROFILE BY ID (Public)
+// ============================================
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log("📡 Fetching user profile for ID:", userId);
+
+    const user = await User.findById(userId).select("-passwordHash -__v");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    console.log("✅ User found:", user.name);
+    res.json({
+      success: true,
+      ...user.toObject(),
+    });
+  } catch (error) {
+    console.error("❌ Error fetching user:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

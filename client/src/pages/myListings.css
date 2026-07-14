@@ -1,135 +1,158 @@
-.my-listings-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+.my-listings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
 }
 
-.my-listings-container h2 {
+.header-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-create-listing {
+  background: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-create-listing:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-view-matches {
+  background: #2196f3;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-view-matches:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+/* Add match button to listing card actions */
+.listing-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.listing-actions .btn-edit {
+  background: #ff9800;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.listing-actions .btn-edit:hover {
+  background: #f57c00;
+}
+
+.listing-actions .btn-delete {
+  background: #f44336;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.listing-actions .btn-delete:hover {
+  background: #d32f2f;
+}
+
+.listing-actions .btn-view-matches {
+  background: #9c27b0;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.listing-actions .btn-view-matches:hover {
+  background: #7b1fa2;
+}
+
+.listing-actions .btn-save {
+  background: #4caf50;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.listing-actions .btn-save:hover:not(:disabled) {
+  background: #45a049;
+}
+
+.listing-actions .btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.listing-actions .btn-cancel {
+  background: #9e9e9e;
+  color: white;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.listing-actions .btn-cancel:hover {
+  background: #757575;
+}
+
+.no-listings {
   text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.listings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
-}
-
-.listing-card {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 1.25rem;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.listing-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.listing-type,
-.listing-status {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  text-transform: capitalize;
-}
-
-.listing-type.offer {
-  background: #e3f2fd;
-  color: #1565c0;
-}
-
-.listing-type.request {
-  background: #fff3e0;
-  color: #ef6c00;
-}
-
-.listing-status.active {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.listing-status.matched {
-  background: #ede7f6;
-  color: #5e35b1;
-}
-
-.listing-status.closed {
-  background: #eeeeee;
-  color: #757575;
-}
-
-.listing-card h3 {
-  margin: 0.4rem 0;
-}
-
-.listing-category {
-  font-size: 0.85rem;
+.no-listings p {
   color: #888;
-  margin: 0 0 0.5rem;
+  font-size: 16px;
+  margin-bottom: 20px;
 }
 
 .listing-meta {
-  font-size: 0.8rem;
+  font-size: 14px;
   color: #666;
-  margin: 0.2rem 0;
-}
-
-.listing-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.btn-edit,
-.btn-delete,
-.btn-save,
-.btn-cancel {
-  padding: 0.4rem 0.9rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.btn-edit,
-.btn-save {
-  background: #4f46e5;
-  color: #fff;
-}
-
-.btn-delete {
-  background: #fdecea;
-  color: #d32f2f;
-}
-
-.btn-cancel {
-  background: #eee;
-  color: #333;
-}
-
-.listing-edit-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.listing-edit-form label {
-  margin-top: 0.6rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.listing-edit-form input,
-.listing-edit-form select,
-.listing-edit-form textarea {
-  padding: 0.5rem;
-  margin-top: 0.2rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-family: inherit;
-  font-size: 0.9rem;
+  margin: 4px 0;
 }

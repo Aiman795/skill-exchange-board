@@ -20,8 +20,14 @@ export default function Profile() {
     setUser(res.user);
   };
 
-  if (loading) return <p style={{ textAlign: "center", marginTop: "3rem" }}>Loading...</p>;
-  if (error) return <p style={{ textAlign: "center", marginTop: "3rem", color: "#d32f2f" }}>{error}</p>;
+  if (loading)
+    return <p style={{ textAlign: "center", marginTop: "3rem" }}>Loading...</p>;
+  if (error)
+    return (
+      <p style={{ textAlign: "center", marginTop: "3rem", color: "#d32f2f" }}>
+        {error}
+      </p>
+    );
 
   return (
     <div className="auth-container">

@@ -10,7 +10,8 @@ import CreateListing from "./pages/CreateListing";
 import MyListings from "./pages/MyListings";
 import Navbar from "./components/Navbar";
 import BrowseListings from "./pages/BrowseListings"; // This should work with .jsx
-
+import MyMatches from "./pages/MyMatches"; // 👈 ADD THIS IMPORT
+import ViewProfile from "./pages/ViewProfile";
 import "./App.css";
 
 function App() {
@@ -24,6 +25,9 @@ function App() {
         <Route path="/create-listing" element={<CreateListing />} />
         <Route path="/my-listings" element={<MyListings />} />
         <Route path="/browse" element={<BrowseListings />} />
+        <Route path="/my-matches" element={<MyMatches />} />
+        <Route path="/profile/:userId" element={<Profile />} />
+        <Route path="/view-profile/:userId" element={<ViewProfile />} />
 
         {/* Home page */}
         <Route
@@ -56,7 +60,8 @@ function App() {
                   <span>|</span>
                   <Link to="/create-listing">Create Listing</Link>
                   <span>|</span>
-                  <Link to="/browse">Browse Listings</Link>{" "}
+                  <Link to="/browse">Browse Listings</Link> <span>|</span>
+                  <Link to="/my-matches">My Matches</Link>
                   {/* 👈 Added browse link */}
                 </p>
               </section>

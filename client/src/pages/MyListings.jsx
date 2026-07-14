@@ -1,133 +1,130 @@
-import React, { useEffect, useState } from "react";
-import "./myListings.css";
-
-const emptyForm = {
-  title: "",
-  category: "",
-  description: "",
-  type: "offer",
-  availability: "",
-  radiusKm: "",
-  status: "active",
-};
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getMyListings, updateListing, deleteListing } from "../services/api";
+import "./MyListings.css";
 
 const MyListings = () => {
+  const navigate = useNavigate();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState(emptyForm);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    type: "",
+    category: "",
+    description: "",
+    availability: "",
+    radiusKm: "",
+    status: "",
+  });
   const [saving, setSaving] = useState(false);
 
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    fetchListings();
+  }, []);
 
-  const fetchMyListings = async () => {
-    setLoading(true);
-    setError("");
+  const fetchListings = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/listings/mine", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to load listings");
-      setListings(data.data || []);
+      setLoading(true);
+      const response = await getMyListings();
+      setListings(response.data || []);
+      setError("");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to fetch listings");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchMyListings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const startEditing = (listing) => {
     setEditingId(listing._id);
     setEditForm({
       title: listing.title,
+      type: listing.type,
       category: listing.category,
       description: listing.description,
-      type: listing.type,
-      availability: listing.availability,
-      radiusKm: listing.radiusKm,
-      status: listing.status,
+      availability: listing.availability || "",
+      radiusKm: listing.radiusKm || "",
+      status: listing.status || "active",
     });
   };
 
   const cancelEditing = () => {
     setEditingId(null);
-    setEditForm(emptyForm);
+    setEditForm({});
   };
 
   const handleEditChange = (e) => {
-    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const saveEdit = async (id) => {
-    setSaving(true);
-    setError("");
     try {
-      const res = await fetch(`http://localhost:5000/api/listings/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...editForm,
-          radiusKm: editForm.radiusKm ? Number(editForm.radiusKm) : 5,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to update listing");
-
-      setListings((prev) =>
-        prev.map((l) => (l._id === id ? data.data : l))
-      );
+      setSaving(true);
+      await updateListing(id, editForm);
+      await fetchListings();
       cancelEditing();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to update listing");
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this listing? This can't be undone."
-    );
-    if (!confirmed) return;
-
+    if (!window.confirm("Are you sure you want to delete this listing?"))
+      return;
     try {
-      const res = await fetch(`http://localhost:5000/api/listings/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to delete listing");
-
-      setListings((prev) => prev.filter((l) => l._id !== id));
+      await deleteListing(id);
+      await fetchListings();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to delete listing");
     }
   };
 
+  // 👇 NEW: Navigate to matches page
+  const handleViewMatches = () => {
+    navigate("/my-matches");
+  };
+
+  // 👇 NEW: Navigate to matches for specific listing
+  const handleViewMatchesForListing = (listingId) => {
+    navigate(`/my-matches?listing=${listingId}`);
+  };
+
   if (loading) {
-    return <p style={{ textAlign: "center", marginTop: "3rem" }}>Loading your listings...</p>;
+    return <div className="loading">Loading your listings...</div>;
   }
 
   return (
     <div className="my-listings-container">
-      <h2>My Listings</h2>
+      <div className="my-listings-header">
+        <h2>My Listings</h2>
+        <div className="header-actions">
+          <button
+            className="btn-create-listing"
+            onClick={() => navigate("/create-listing")}
+          >
+            + Create New Listing
+          </button>
+          {/* 👇 ADD: View All Matches Button */}
+        </div>
+      </div>
 
       {error && <p className="auth-error">{error}</p>}
 
       {listings.length === 0 ? (
-        <p style={{ textAlign: "center", color: "#888" }}>
-          You haven't created any listings yet.
-        </p>
+        <div className="no-listings">
+          <p>You haven't created any listings yet.</p>
+          <button
+            className="btn-create-listing"
+            onClick={() => navigate("/create-listing")}
+          >
+            Create Your First Listing
+          </button>
+        </div>
       ) : (
         <div className="listings-grid">
           {listings.map((listing) => (
@@ -143,7 +140,11 @@ const MyListings = () => {
                   />
 
                   <label>Type</label>
-                  <select name="type" value={editForm.type} onChange={handleEditChange}>
+                  <select
+                    name="type"
+                    value={editForm.type}
+                    onChange={handleEditChange}
+                  >
                     <option value="offer">Offer</option>
                     <option value="request">Request</option>
                   </select>
@@ -182,7 +183,11 @@ const MyListings = () => {
                   />
 
                   <label>Status</label>
-                  <select name="status" value={editForm.status} onChange={handleEditChange}>
+                  <select
+                    name="status"
+                    value={editForm.status}
+                    onChange={handleEditChange}
+                  >
                     <option value="active">Active</option>
                     <option value="matched">Matched</option>
                     <option value="closed">Closed</option>
@@ -218,16 +223,29 @@ const MyListings = () => {
                     Availability: {listing.availability || "—"}
                   </p>
                   <p className="listing-meta">Radius: {listing.radiusKm} km</p>
+                  {listing.city && (
+                    <p className="listing-meta">📍 {listing.city}</p>
+                  )}
 
+                  {/* 👇 ADD: View Matches Button for this listing */}
                   <div className="listing-actions">
-                    <button className="btn-edit" onClick={() => startEditing(listing)}>
-                      Edit
+                    <button
+                      className="btn-edit"
+                      onClick={() => startEditing(listing)}
+                    >
+                      ✏️ Edit
                     </button>
                     <button
                       className="btn-delete"
                       onClick={() => handleDelete(listing._id)}
                     >
-                      Delete
+                      🗑️ Delete
+                    </button>
+                    <button
+                      className="btn-view-matches"
+                      onClick={() => handleViewMatchesForListing(listing._id)}
+                    >
+                      🔗 Matches
                     </button>
                   </div>
                 </>

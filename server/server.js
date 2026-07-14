@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import matchRoutes from "./routes/match.routes.js"; // 👈 ADD THIS
 // 1. Naya listing routes import kiya
 import listingRoutes from "./routes/listing.routes.js";
 
@@ -23,6 +24,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 // 2. Listing routes ko yahan endpoint ke sath connect kar diya
 app.use("/api/listings", listingRoutes);
+app.use("/api/matches", matchRoutes); // 👈 ADD THIS
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
