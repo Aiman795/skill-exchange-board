@@ -1,45 +1,69 @@
 import mongoose from "mongoose";
 
-const { Schema } = mongoose;
-
-const listingSchema = new Schema(
+const listingSchema = new mongoose.Schema(
   {
     userId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "User reference is required"],
+      required: true,
     },
     type: {
       type: String,
-      enum: ["offer", "request"], // Frontend se value lowercase ("offer"/"request") bhejiye ga
-      required: [true, "Type is required (offer or request)"],
+      enum: ["offer", "request"],
+      required: true,
     },
     title: {
       type: String,
-      required: [true, "Title is required"],
+      required: true,
       trim: true,
     },
     category: {
       type: String,
-      required: [true, "Category is required"],
+      required: true,
       trim: true,
     },
     description: {
       type: String,
-      required: [true, "Description is required"],
+      required: true,
       trim: true,
     },
-    // 1. Availability field jo Aiman ke issue mein demanded hai
     availability: {
       type: String,
-      required: [true, "Availability is required"],
-      trim: true, // e.g., "Online", "In-Person", "Weekends"
+      required: true,
+      trim: true,
     },
-    // 2. RadiusKm pehle se maujood hai, standard default value 5 ke sath
     radiusKm: {
       type: Number,
       default: 5,
-      min: [0, "Radius cannot be negative"],
+      min: 1,
+      max: 100,
+    },
+    // Location fields
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        default: [0, 0],
+      },
+    },
+    locationName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    city: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    country: {
+      type: String,
+      trim: true,
+      default: "Pakistan",
     },
     status: {
       type: String,
@@ -48,8 +72,12 @@ const listingSchema = new Schema(
     },
   },
   {
-    timestamps: { createdAt: true, updatedAt: false },
+    timestamps: true,
   }
 );
 
-export default mongoose.model("Listing", listingSchema);
+// Create geospatial index for location-based queries
+listingSchema.index({ location: "2dsphere" });
+
+const Listing = mongoose.model("Listing", listingSchema);
+export default Listing;

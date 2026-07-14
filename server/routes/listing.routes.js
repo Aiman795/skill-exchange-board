@@ -1,27 +1,26 @@
 import express from "express";
-const router = express.Router();
 import {
-  createListing,
   getListings,
   getMyListings,
+  createListing,
   updateListing,
   deleteListing,
+  searchListings,
+  getNearbyListings,
 } from "../controllers/listing.controller.js";
-import verifyToken from "../middleware/auth.middleware.js"; // Apni team ka exact auth middleware path check kar lein
+import authMiddleware from "../middleware/auth.middleware.js"; // 👈 Changed to default import
 
-// GET api/listings (Public — browse all)
+const router = express.Router();
+
+// Public routes
 router.get("/", getListings);
+router.get("/search", searchListings);
+router.get("/nearby", getNearbyListings);
 
-// GET api/listings/mine (Protected — apni khud ki listings)
-router.get("/mine", verifyToken, getMyListings);
-
-// POST api/listings (Protected)
-router.post("/", verifyToken, createListing);
-
-// PUT api/listings/:id (Protected — sirf apni listing edit kar sakte hain)
-router.put("/:id", verifyToken, updateListing);
-
-// DELETE api/listings/:id (Protected — sirf apni listing delete kar sakte hain)
-router.delete("/:id", verifyToken, deleteListing);
+// Protected routes (using authMiddleware instead of protect)
+router.get("/mine", authMiddleware, getMyListings);
+router.post("/", authMiddleware, createListing);
+router.put("/:id", authMiddleware, updateListing);
+router.delete("/:id", authMiddleware, deleteListing);
 
 export default router;

@@ -1,134 +1,236 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./auth.css";
+import { createListing } from "../services/api";
+import "./CreateListing.css";
 
 const CreateListing = () => {
-  const [formData, setFormData] = useState({
-    title: "",
-    category: "",
-    description: "",
-    type: "offer", // Match with backend lowercase enum ["offer", "request"]
-    availability: "",
-    radiusKm: "",
-  });
-
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    title: "",
+    type: "offer",
+    category: "",
+    description: "",
+    availability: "",
+    radiusKm: 5,
+    locationName: "",
+    city: "",
+    country: "Pakistan",
+  });
+
+  const categories = [
+    "Programming",
+    "Language",
+    "Graphics",
+    "Music",
+    "Art",
+    "Business",
+    "Health",
+    "Fitness",
+    "Education",
+    "Cooking",
+    "Crafts",
+    "Technology",
+    "Writing",
+    "Other",
+  ];
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError("");
     setSuccess("");
 
-    // Required fields client-side verification
-    if (!formData.title || !formData.category || !formData.description || !formData.availability) {
-      setError("Please fill all the required fields.");
-      return;
-    }
-
     try {
-      // LocalStorage se logged-in user ka token nikalna validation ke liye
-      const token = localStorage.getItem("token");
-
-      const response = await fetch("http://localhost:5000/api/listings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // Secure backend route connection
-        },
-        body: JSON.stringify({
-          ...formData,
-          radiusKm: formData.radiusKm ? Number(formData.radiusKm) : 5, // Parsing into number
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setSuccess("Listing created successfully! Redirecting...");
-        setTimeout(() => {
-          navigate("/"); // Redirect to home (no /dashboard page exists yet)
-        }, 2000);
-      } else {
-        setError(data.message || "Failed to create listing.");
+      if (!formData.city) {
+        setError("Please provide your city");
+        setLoading(false);
+        return;
       }
+
+      const listingData = {
+        ...formData,
+        radiusKm: Number(formData.radiusKm),
+      };
+
+      await createListing(listingData);
+      setSuccess("✅ Listing created successfully!");
+
+      setTimeout(() => {
+        navigate("/my-listings");
+      }, 2000);
     } catch (err) {
-      console.error("Frontend submit error:", err);
-      setError("Server connection failed. Please try again later.");
+      setError(err.message || "Failed to create listing");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <h2>Create a Listing</h2>
+    <div className="create-listing-container">
+      <div className="create-listing-card">
+        <h1>Create a Listing</h1>
+        <p className="subtitle">Share your skills or find what you need</p>
 
-        {error && <p className="auth-error">{error}</p>}
-        {success && <p style={{ color: "#2e7d32", fontSize: "0.85rem", marginTop: "0.5rem" }}>{success}</p>}
+        {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
 
-        <label>Listing Title *</label>
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          placeholder="e.g., UI/UX Design Mentorship"
-          required
-        />
+        <form onSubmit={handleSubmit} className="listing-form">
+          {/* Title */}
+          <div className="form-group">
+            <label htmlFor="title">Listing Title *</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder="e.g., UI/UX Design Mentorship"
+              value={formData.title}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <label>Listing Type *</label>
-        <select name="type" value={formData.type} onChange={handleChange}>
-          <option value="offer">Offer (I want to teach / share)</option>
-          <option value="request">Request (I want to learn / find)</option>
-        </select>
+          {/* Type */}
+          <div className="form-group">
+            <label htmlFor="type">Listing Type *</label>
+            <select
+              id="type"
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              required
+            >
+              <option value="offer">📤 Offer (I want to teach/share)</option>
+              <option value="request">📥 Request (I want to learn/find)</option>
+            </select>
+          </div>
 
-        <label>Category *</label>
-        <input
-          type="text"
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          placeholder="e.g., Programming, Language, Graphics"
-          required
-        />
+          {/* Category */}
+          <div className="form-group">
+            <label htmlFor="category">Category *</label>
+            <select
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select a category...</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <label>Description *</label>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          placeholder="Tell others what you are sharing or looking for..."
-          rows="4"
-          required
-        ></textarea>
+          {/* Description */}
+          <div className="form-group">
+            <label htmlFor="description">Description *</label>
+            <textarea
+              id="description"
+              name="description"
+              placeholder="Tell others what you are sharing or looking for..."
+              value={formData.description}
+              onChange={handleChange}
+              rows="4"
+              required
+            />
+          </div>
 
-        <label>Availability *</label>
-        <input
-          type="text"
-          name="availability"
-          value={formData.availability}
-          onChange={handleChange}
-          placeholder="e.g., Weekends, Mon-Wed 5PM, Online"
-          required
-        />
+          {/* Availability */}
+          <div className="form-group">
+            <label htmlFor="availability">Availability *</label>
+            <input
+              type="text"
+              id="availability"
+              name="availability"
+              placeholder="e.g., Weekends, Mon-Wed 5PM, Online"
+              value={formData.availability}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <label>Radius (in Kilometers)</label>
-        <input
-          type="number"
-          name="radiusKm"
-          value={formData.radiusKm}
-          onChange={handleChange}
-          placeholder="e.g., 5, 10 (leave blank for default 5km)"
-          min="0"
-        />
+          {/* Location Section */}
+          <div className="form-section">
+            <h3>📍 Location Details</h3>
+            <p className="section-hint">
+              Where are you located? This helps people find you nearby.
+            </p>
 
-        <button type="submit">Save Listing to DB</button>
-      </form>
+            <div className="form-group">
+              <label htmlFor="locationName">Area/Location Name</label>
+              <input
+                type="text"
+                id="locationName"
+                name="locationName"
+                placeholder="e.g., Gulberg, DHA Phase 6"
+                value={formData.locationName}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="city">City *</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                placeholder="e.g., Lahore, Karachi, Islamabad"
+                value={formData.city}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="country">Country</label>
+              <input
+                type="text"
+                id="country"
+                name="country"
+                placeholder="e.g., Pakistan"
+                value={formData.country}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {/* Radius */}
+          <div className="form-group">
+            <label htmlFor="radiusKm">
+              Radius (in Kilometers)
+              <span className="hint">How far are you willing to travel?</span>
+            </label>
+            <input
+              type="number"
+              id="radiusKm"
+              name="radiusKm"
+              placeholder="e.g., 5, 10"
+              value={formData.radiusKm}
+              onChange={handleChange}
+              min="1"
+              max="100"
+            />
+          </div>
+
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? "Creating..." : "📝 Save Listing to DB"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
