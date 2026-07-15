@@ -35,6 +35,11 @@ const userSchema = new Schema(
       trim: true,
       default: "",
     },
+    blockedUsers: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: false },

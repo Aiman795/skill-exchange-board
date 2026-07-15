@@ -265,7 +265,17 @@ const MyMatches = () => {
                 >
                   👤 View Profile
                 </button>
-                <button className="message-btn">💬 Message</button>
+                <button
+                  className="message-btn"
+                  onClick={() => {
+                    const matchedUserId = matchedListing.userId?._id || matchedListing.userId || matchedListing.user?._id;
+                    if (matchedUserId) {
+                      navigate(`/chat/${matchedUserId}?listing=${userListing._id}`);
+                    }
+                  }}
+                >
+                  💬 Message
+                </button>
               </div>
             </div>
           );

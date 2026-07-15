@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar";
 import BrowseListings from "./pages/BrowseListings"; // This should work with .jsx
 import MyMatches from "./pages/MyMatches"; // 👈 ADD THIS IMPORT
 import ViewProfile from "./pages/ViewProfile";
+import Chat from "./pages/Chat";
 import "./App.css";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/my-listings" element={<MyListings />} />
         <Route path="/browse" element={<BrowseListings />} />
         <Route path="/my-matches" element={<MyMatches />} />
+        <Route path="/chat/:otherUserId" element={<Chat />} />
         <Route path="/profile/:userId" element={<Profile />} />
         <Route path="/view-profile/:userId" element={<ViewProfile />} />
 
