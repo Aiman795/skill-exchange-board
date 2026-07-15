@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getToken } from "../lib/api";
 import "./ViewProfile.css";
 
 const ViewProfile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -14,7 +15,9 @@ const ViewProfile = () => {
     if (userId) {
       fetchProfile();
     }
-  }, [userId]);
+    // location.key changes on every navigation (even to the same path),
+    // so this forces a refetch after you navigate back from the edit form.
+  }, [userId, location.key]);
 
   const fetchProfile = async () => {
     try {
@@ -28,7 +31,7 @@ const ViewProfile = () => {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      // 👇 This will call GET /api/users/:userId
+      // Calls GET /api/users/:userId
       const response = await fetch(
         `http://localhost:5000/api/users/${userId}`,
         {
@@ -76,11 +79,44 @@ const ViewProfile = () => {
     );
   }
 
+  // Determine fallback values dynamically based on what the API returned
+  const userLocation = profile.location || profile.city || "Not specified";
+
+  // Cache-bust the photo URL so an updated image actually replaces the old one
+  // in the browser cache instead of showing the stale cached version.
+  const userPhoto = profile.photoUrl
+    ? `http://localhost:5000${profile.photoUrl}?t=${Date.now()}`
+    : null;
+
   return (
     <div className="view-profile-container">
       <div className="view-profile-card">
+        {/* Back Button to easily go back to previous desktop pages */}
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          ← Back
+        </button>
+
         <div className="profile-header">
-          <div className="profile-avatar">{profile.name?.charAt(0) || "U"}</div>
+          {/* Renders circular profile photo if available, otherwise falls back to Initial letters */}
+          <div className="profile-avatar-wrapper" style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+            {userPhoto ? (
+              <img
+                src={userPhoto}
+                alt={profile.name}
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  boxShadow: "0 4px 16px rgba(0, 0, 0, 0.12)",
+                }}
+              />
+            ) : (
+              <div className="profile-avatar">
+                {profile.name?.charAt(0).toUpperCase() || "U"}
+              </div>
+            )}
+          </div>
           <h1>{profile.name || "Unknown User"}</h1>
           <p className="profile-email">{profile.email}</p>
         </div>
@@ -90,9 +126,7 @@ const ViewProfile = () => {
             <span className="info-icon">📍</span>
             <div>
               <span className="info-label">Location</span>
-              <span className="info-value">
-                {profile.city || "Not specified"}
-              </span>
+              <span className="info-value">{userLocation}</span>
             </div>
           </div>
 

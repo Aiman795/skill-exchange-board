@@ -1,11 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { getToken, clearToken } from "../lib/api";
+import "./Navbar.css"; // We will create this simple, clean stylesheet next!
 
 function ExchangeMark() {
   return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <path d="M6 10h13l-3.5-3.5" stroke="#E8A33D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M22 18H9l3.5 3.5" stroke="#1F4B3F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" className="brand-logo-svg">
+      {/* Path 1: Styled with accent color */}
+      <path d="M6 10h13l-3.5-3.5" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+      {/* Path 2: Dynamically adapt to text color with a lighter fallback */}
+      <path d="M22 18H9l3.5 3.5" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
     </svg>
   );
 }
@@ -20,56 +23,43 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="border-b" style={{ borderColor: "var(--color-border)" }}>
-      <div
-        className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "3rem",
-          flexWrap: "wrap",
-          maxWidth: "64rem",
-          margin: "0 auto",
-          padding: "1rem 1.5rem",
-        }}
-      >
-        <Link to="/" className="flex items-center gap-2">
+    <nav className="navbar-container">
+      <div className="navbar-inner">
+        {/* Brand Logo */}
+        <Link to="/" className="navbar-brand">
           <ExchangeMark />
-          <span className="font-display text-lg font-semibold" style={{ color: "var(--color-primary)" }}>
-            Skill Exchange
-          </span>
+          <span className="brand-name">Skill Exchange</span>
         </Link>
 
-        <div
-          className="flex items-center gap-6 text-sm font-medium"
-          style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}
-        >
+        {/* Navigation Links */}
+        <div className="navbar-links">
           {isLoggedIn ? (
             <>
-              <Link to="/create-listing" className="hover:opacity-70" style={{ color: "var(--color-text)" }}>
+              <Link to="/browse" className="nav-link">
+                Browse
+              </Link>
+              <Link to="/my-matches" className="nav-link">
+                My Matches
+              </Link>
+              <Link to="/create-listing" className="nav-link">
                 Create Listing
               </Link>
-              <Link to="/my-listings" className="hover:opacity-70" style={{ color: "var(--color-text)" }}>
+              <Link to="/my-listings" className="nav-link">
                 My Listings
               </Link>
-              <Link to="/profile" className="hover:opacity-70" style={{ color: "var(--color-text)" }}>
+              <Link to="/profile" className="nav-link nav-link-profile">
                 Profile
               </Link>
-              <button onClick={handleLogout} className="hover:opacity-70" style={{ color: "var(--color-text-muted)" }}>
+              <button onClick={handleLogout} className="nav-btn-logout">
                 Log out
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="hover:opacity-70" style={{ color: "var(--color-text)" }}>
+              <Link to="/login" className="nav-link">
                 Log in
               </Link>
-              <Link
-                to="/signup"
-                className="px-4 py-2 rounded-md text-white text-sm font-medium"
-                style={{ backgroundColor: "var(--color-primary)" }}
-              >
+              <Link to="/signup" className="nav-btn-signup">
                 Sign up
               </Link>
             </>

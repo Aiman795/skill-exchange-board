@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { Routes, Route, Link } from "react-router-dom"; // 👈 Only import ONCE
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
+import { Routes, Route, Link } from "react-router-dom";
 import heroImg from "./assets/hero.png";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -9,8 +7,8 @@ import Profile from "./pages/Profile";
 import CreateListing from "./pages/CreateListing";
 import MyListings from "./pages/MyListings";
 import Navbar from "./components/Navbar";
-import BrowseListings from "./pages/BrowseListings"; // This should work with .jsx
-import MyMatches from "./pages/MyMatches"; // 👈 ADD THIS IMPORT
+import BrowseListings from "./pages/BrowseListings";
+import MyMatches from "./pages/MyMatches";
 import ViewProfile from "./pages/ViewProfile";
 import Chat from "./pages/Chat";
 import "./App.css";
@@ -35,39 +33,29 @@ function App() {
         <Route
           path="/"
           element={
-            <>
-              <section id="center">
-                <div className="hero">
-                  <img
-                    src={heroImg}
-                    className="base"
-                    width="170"
-                    height="179"
-                    alt=""
-                  />
-                </div>
+            <main id="center" className="hero-container">
+              <div className="hero-graphic">
+                <img src={heroImg} className="base" alt="Platform Hero Visual" />
+                <div className="glow-effect"></div>
+              </div>
 
-                <p
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "1rem",
-                    marginTop: "1rem",
-                  }}
-                >
-                  <Link to="/signup">Sign Up</Link>
-                  <span>|</span>
-                  <Link to="/login">Login</Link>
-                  <span>|</span>
-                  <Link to="/create-listing">Create Listing</Link>
-                  <span>|</span>
-                  <Link to="/browse">Browse Listings</Link> <span>|</span>
-                  <Link to="/my-matches">My Matches</Link>
-                  {/* 👈 Added browse link */}
-                </p>
-              </section>
-            </>
+              <div className="welcome-text">
+                <h1>Find Your Perfect Connection</h1>
+                <p>Browse listings, find matches, and start chatting instantly.</p>
+              </div>
+
+              <div className="action-grid">
+                <Link to="/browse" className="btn btn-primary">Browse Listings</Link>
+                <Link to="/my-matches" className="btn btn-secondary">My Matches</Link>
+                <Link to="/create-listing" className="btn btn-secondary">Create Listing</Link>
+              </div>
+
+              <div className="auth-footer">
+                <span>New here? <Link to="/signup">Sign Up</Link></span>
+                <span className="dot">•</span>
+                <span>Already have an account? <Link to="/login">Login</Link></span>
+              </div>
+            </main>
           }
         />
       </Routes>
